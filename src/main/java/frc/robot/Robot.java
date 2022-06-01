@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.drivetrain.Drivetrain;
@@ -23,6 +24,7 @@ public class Robot extends TimedRobot {
 
   @SuppressWarnings("unused")
   private Drivetrain m_drivetrain;
+  private XboxController m_controller;
 
 
   /**
@@ -36,6 +38,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     m_drivetrain = Drivetrain.getInstance();
+    m_controller = new XboxController(0);
 
   }
 
@@ -82,7 +85,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    m_drivetrain.drive(() -> m_controller.getRawAxis(0), () -> m_controller.getRawAxis(1), () -> m_controller.getRawAxis(2));
+  }
 
   /** This function is called periodically during operator control. */
   @Override
