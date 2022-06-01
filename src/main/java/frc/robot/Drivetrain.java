@@ -32,10 +32,10 @@ public class Drivetrain extends SubsystemBase{
         m_LeftMotor = new CANSparkMax(3, MotorType.kBrushed);
         m_RightMotor = new CANSparkMax(4, MotorType.kBrushed);
 
-        m_FrontModule = new Module(new Vector2d(1, 1), m_FrontMotor);
-        m_BackModule = new Module(new Vector2d(1, 1), m_BackMotor);
-        m_LeftModule = new Module(new Vector2d(1, 1), m_LeftMotor);
-        m_RightModule = new Module(new Vector2d(1, 1), m_RightMotor);
+        m_FrontModule = new Module(new Vector2d(0, Constants.DriveConstants.TRACK_WIDTH_METERS/2), m_FrontMotor);
+        m_BackModule = new Module(new Vector2d(0, -Constants.DriveConstants.TRACK_WIDTH_METERS/2), m_BackMotor);
+        m_LeftModule = new Module(new Vector2d(-Constants.DriveConstants.TRACK_WIDTH_METERS/2, 0), m_LeftMotor);
+        m_RightModule = new Module(new Vector2d(Constants.DriveConstants.TRACK_WIDTH_METERS/2, 0), m_RightMotor);
 
     }
 
