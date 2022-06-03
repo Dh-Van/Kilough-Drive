@@ -94,6 +94,8 @@ public class Robot extends TimedRobot {
         () -> m_controller.getY(Hand.kLeft), 
         () -> m_controller.getX(Hand.kRight)
     );
+
+    // m_drivetrain.zeroGyro(m);
   }
 
   /** This function is called periodically during operator control. */

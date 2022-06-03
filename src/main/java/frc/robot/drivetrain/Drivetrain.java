@@ -2,9 +2,11 @@ package frc.robot.drivetrain;
 
 import java.util.function.DoubleSupplier;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -28,6 +30,8 @@ public class Drivetrain extends SubsystemBase{
     private Module m_LeftModule;
     private Module m_RightModule;
 
+    private AHRS m_gyro;
+
     // The direction the robot is pointing in, relative to field X [CCW+, In radians]
     private double m_fieldCentricBearing = 0;
 
@@ -39,6 +43,9 @@ public class Drivetrain extends SubsystemBase{
         CANSparkMax backMotor = new CANSparkMax(DriveConstants.BACK_MOTOR_ID, MotorType.kBrushed);
         CANSparkMax leftMotor = new CANSparkMax(DriveConstants.LEFT_MOTOR_ID, MotorType.kBrushed);
         CANSparkMax rightMotor = new CANSparkMax(DriveConstants.RIGHT_MOTOR_ID, MotorType.kBrushed);
+
+        m_gyro = new AHRS(Port.kMXP);
+        m_gyro.zeroYaw();
 
         initMotors(frontMotor, backMotor, leftMotor, rightMotor);
 
@@ -74,10 +81,8 @@ public class Drivetrain extends SubsystemBase{
     public void drive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier){
         // The target velocity magnitude
         double targetVel = Math.sqrt(Math.pow(xSupplier.getAsDouble(), 2) + Math.pow(ySupplier.getAsDouble(), 2));
-        // The target velocity direction relative to field X [CCW+, In radians]
-        double fieldCentricHeading = Math.asin(ySupplier.getAsDouble() / targetVel);
         // The target velocity deirection relative to robot front [CCW+, In radians]
-        double robotCentricBearing = fieldCentricHeading - m_fieldCentricBearing;
+        double robotCentricBearing = m_gyro.getAngle() - m_fieldCentricBearing;
 
         // TODO add comment explaining this
         double rotation = (thetaSupplier.getAsDouble() * DriveConstants.TRACK_WIDTH_METERS / 2) / ModuleConstants.WHEEL_RADIUS;
@@ -89,6 +94,10 @@ public class Drivetrain extends SubsystemBase{
         m_BackModule.setRPM((translationSIN - rotation) * Constants.RADPS_TO_RPM);
         m_LeftModule.setRPM((translationCOS - rotation) * Constants.RADPS_TO_RPM);
         m_RightModule.setRPM((translationCOS + rotation) * Constants.RADPS_TO_RPM);
+    }
+
+    public void zeroGyro(){
+        m_gyro.zeroYaw();
     }
 
     /**

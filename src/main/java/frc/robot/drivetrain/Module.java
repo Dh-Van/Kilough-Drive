@@ -35,5 +35,4 @@ public class Module extends SubsystemBase{
     public void setRPM(double rpm){
         m_PidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
-
 }
