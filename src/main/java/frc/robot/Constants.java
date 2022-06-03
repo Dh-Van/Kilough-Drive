@@ -4,6 +4,8 @@ public class Constants {
 
     public static int DRIVE_CONTROLLER_PORT = 1;
 
+    public static double RADPS_TO_RPM = 30d / Math.PI;
+
     public static class ModuleConstants{
         /**
          * Radius of the wheel [in meters]

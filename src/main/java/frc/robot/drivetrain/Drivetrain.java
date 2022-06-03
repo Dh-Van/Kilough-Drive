@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.Vector2d;
-
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
@@ -27,6 +27,9 @@ public class Drivetrain extends SubsystemBase{
     private Module m_BackModule;
     private Module m_LeftModule;
     private Module m_RightModule;
+
+    // The direction the robot is pointing in, relative to field X [CCW+, In radians]
+    private double m_fieldCentricBearing = 0;
 
     // Instance of the class, used so that only one instance of the class is being passed around
     private static Drivetrain m_instance;
@@ -57,24 +60,35 @@ public class Drivetrain extends SubsystemBase{
         motors[3].setInverted(false);
     }
 
+    @Override
+    public void periodic() {
+        super.periodic();
+    }
+
     /**
      * Sets motor speeds based off of linear and angular acceleration. 
-     * @param xSupplier: Linear X acceleration
-     * @param ySupplier: Linear Y acceleration
-     * @param thetaSupplier: Angular acceleration
+     * @param xSupplier: Target robot X velocity
+     * @param ySupplier: Target robot Y velocity
+     * @param thetaSupplier: Target robot angular velocity
      */
     public void drive(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier){
+        // The target velocity magnitude
+        double targetVel = Math.sqrt(Math.pow(xSupplier.getAsDouble(), 2) + Math.pow(ySupplier.getAsDouble(), 2));
+        // The target velocity direction relative to field X [CCW+, In radians]
+        double fieldCentricHeading = Math.asin(ySupplier.getAsDouble() / targetVel);
+        // The target velocity deirection relative to robot front [CCW+, In radians]
+        double robotCentricBearing = fieldCentricHeading - m_fieldCentricBearing;
+
+        // TODO add comment explaining this
         double rotation = (thetaSupplier.getAsDouble() * DriveConstants.TRACK_WIDTH_METERS / 2) / ModuleConstants.WHEEL_RADIUS;
-        double translation = (xSupplier.getAsDouble() / ModuleConstants.WHEEL_RADIUS);
-        double heading = Math.tan(xSupplier.getAsDouble() / ySupplier.getAsDouble());
+        // TODO add comment explaning this
+        double translationCOS = (targetVel * Math.cos(robotCentricBearing)) / ModuleConstants.WHEEL_RADIUS;
+        double translationSIN = (targetVel * Math.sin(robotCentricBearing)) / ModuleConstants.WHEEL_RADIUS;
 
-        double targetVel = rotation + translation;
-        double targetRPM = targetVel / (60 * Math.PI);
-
-        m_FrontModule.setRPM(targetRPM * Math.cos(heading));
-        m_BackModule.setRPM(targetRPM * Math.cos(heading));
-        m_LeftModule.setRPM(targetRPM * Math.sin(heading));
-        m_RightModule.setRPM(targetRPM * Math.sin(heading));
+        m_FrontModule.setRPM((translationSIN + rotation) * Constants.RADPS_TO_RPM);
+        m_BackModule.setRPM((translationSIN - rotation) * Constants.RADPS_TO_RPM);
+        m_LeftModule.setRPM((translationCOS - rotation) * Constants.RADPS_TO_RPM);
+        m_RightModule.setRPM((translationCOS + rotation) * Constants.RADPS_TO_RPM);
     }
 
     /**
