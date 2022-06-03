@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Module extends SubsystemBase{
 
+    // Initialize Member variables:
+
+    // Vector representing the (x, y) position of the wheel relative to the center of the robot in starting position
     Vector2d m_wheelPos;
     CANSparkMax m_motor;
     SparkMaxPIDController m_PidController;

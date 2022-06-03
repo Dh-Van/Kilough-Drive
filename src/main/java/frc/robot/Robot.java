@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.drivetrain.Drivetrain;
@@ -22,7 +23,8 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  @SuppressWarnings("unused")
+  // Declare member variables:
+
   private Drivetrain m_drivetrain;
   private XboxController m_controller;
 
@@ -38,7 +40,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     m_drivetrain = Drivetrain.getInstance();
-    m_controller = new XboxController(0);
+    m_controller = new XboxController(Constants.DRIVE_CONTROLLER_PORT);
 
   }
 
@@ -86,7 +88,12 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    m_drivetrain.drive(() -> m_controller.getRawAxis(0), () -> m_controller.getRawAxis(1), () -> m_controller.getRawAxis(2));
+    // Calls the drive method in drivetrain
+    m_drivetrain.drive(
+        () -> m_controller.getX(Hand.kLeft), 
+        () -> m_controller.getY(Hand.kLeft), 
+        () -> m_controller.getX(Hand.kRight)
+    );
   }
 
   /** This function is called periodically during operator control. */

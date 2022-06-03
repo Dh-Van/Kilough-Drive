@@ -2,10 +2,14 @@ package frc.robot;
 
 public class Constants {
 
-    /**
-     * Radius of the wheel [in meters]
-     */
-    public static double WHEEL_RADIUS = 0.1;
+    public static int DRIVE_CONTROLLER_PORT = 1;
+
+    public static class ModuleConstants{
+        /**
+         * Radius of the wheel [in meters]
+         */
+        public static double WHEEL_RADIUS = 0.1;
+    }
 
     public static class DriveConstants{
         /**
@@ -18,5 +22,5 @@ public class Constants {
         public static int BACK_MOTOR_ID = 2;
         public static int LEFT_MOTOR_ID = 3;
         public static int RIGHT_MOTOR_ID = 4;
-    };
+    }
 }
